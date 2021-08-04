@@ -24,6 +24,7 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./backend
+    command: mix do deps.get, ecto.create, ecto.migrate, phx.server
     volumes:
       - /app/node_modules
       - ./backend/src:/app
