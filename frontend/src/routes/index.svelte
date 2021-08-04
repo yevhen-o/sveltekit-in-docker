@@ -19,7 +19,7 @@
 			</picture>
 		</div>
 
-		to your new<br />SvelteKit app updated 4444
+		to your new<br />SvelteKit app updated 5555
 	</h1>
 
 	<h2>
