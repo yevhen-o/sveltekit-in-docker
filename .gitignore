@@ -3,3 +3,6 @@ node_modules
 /.svelte-kit
 /package
 .history
+frontend/node_modules
+backend/node_modules
+backend/assets/node_modules
