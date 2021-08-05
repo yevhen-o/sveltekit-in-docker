@@ -1,5 +1,5 @@
 import Root from '../../generated/root.svelte';
-import { routes, fallback } from '../../generated/manifest.js';
+import { fallback, routes } from '../../generated/manifest.js';
 import { g as get_base_uri } from '../chunks/utils.js';
 import { writable } from 'svelte/store';
 import { init } from './singletons.js';
@@ -22,25 +22,33 @@ function find_anchor(node) {
 }
 
 class Router {
-	/** @param {{
+	/**
+	 * @param {{
 	 *    base: string;
 	 *    routes: import('types/internal').CSRRoute[];
 	 *    trailing_slash: import('types/internal').TrailingSlash;
-	 * }} opts */
-	constructor({ base, routes, trailing_slash }) {
+	 *    renderer: import('./renderer').Renderer
+	 * }} opts
+	 */
+	constructor({ base, routes, trailing_slash, renderer }) {
 		this.base = base;
 		this.routes = routes;
 		this.trailing_slash = trailing_slash;
-	}
 
-	/** @param {import('./renderer').Renderer} renderer */
-	init(renderer) {
 		/** @type {import('./renderer').Renderer} */
 		this.renderer = renderer;
 		renderer.router = this;
 
 		this.enabled = true;
 
+		// make it possible to reset focus
+		document.body.setAttribute('tabindex', '-1');
+
+		// create initial history entry, so we can return here
+		history.replaceState(history.state || {}, '', location.href);
+	}
+
+	init_listeners() {
 		if ('scrollRestoration' in history) {
 			history.scrollRestoration = 'manual';
 		}
@@ -152,12 +160,6 @@ class Router {
 				this._navigate(url, event.state['sveltekit:scroll'], false, []);
 			}
 		});
-
-		// make it possible to reset focus
-		document.body.setAttribute('tabindex', '-1');
-
-		// create initial history entry, so we can return here
-		history.replaceState(history.state || {}, '', location.href);
 	}
 
 	/** @param {URL} url */
@@ -226,7 +228,6 @@ class Router {
 			throw new Error('Attempted to prefetch a URL that does not belong to this app');
 		}
 
-		// @ts-expect-error
 		return this.renderer.load(info);
 	}
 
@@ -260,13 +261,11 @@ class Router {
 			}
 		}
 
-		// @ts-expect-error
 		this.renderer.notify({
 			path: info.path,
 			query: info.query
 		});
 
-		// @ts-expect-error
 		await this.renderer.update(info, chain, false);
 
 		if (!keepfocus) {
@@ -359,6 +358,14 @@ function normalize(loaded) {
 	}
 
 	return /** @type {import('types/internal').NormalizedLoadOutput} */ (loaded);
+}
+
+/**
+ * @param {unknown} err
+ * @return {Error}
+ */
+function coalesce_to_error(err) {
+	return err instanceof Error ? err : new Error(JSON.stringify(err));
 }
 
 /** @param {any} value */
@@ -498,6 +505,8 @@ class Renderer {
 		/** @type {import('./types').NavigationResult | undefined} */
 		let result;
 
+		let error_args;
+
 		try {
 			for (let i = 0; i < nodes.length; i += 1) {
 				const is_leaf = i === nodes.length - 1;
@@ -515,12 +524,12 @@ class Renderer {
 				if (node && node.loaded) {
 					if (node.loaded.error) {
 						if (error) throw node.loaded.error;
-						result = await this._load_error({
+						error_args = {
 							status: node.loaded.status,
 							error: node.loaded.error,
 							path: page.path,
 							query: page.query
-						});
+						};
 					} else if (node.loaded.context) {
 						context = {
 							...context,
@@ -530,13 +539,15 @@ class Renderer {
 				}
 			}
 
-			result = await this._get_navigation_result_from_branch({ page, branch });
-		} catch (e) {
+			result = error_args
+				? await this._load_error(error_args)
+				: await this._get_navigation_result_from_branch({ page, branch });
+		} catch (/** @type {unknown} */ e) {
 			if (error) throw e;
 
 			result = await this._load_error({
 				status: 500,
-				error: e,
+				error: coalesce_to_error(e),
 				path: page.path,
 				query: page.query
 			});
@@ -1107,14 +1118,6 @@ async function start({ paths, target, session, host, route, spa, trailing_slash,
 		throw new Error('Missing target element. See https://kit.svelte.dev/docs#configuration-target');
 	}
 
-	const router = route
-		? new Router({
-				base: paths.base,
-				routes,
-				trailing_slash
-		  })
-		: null;
-
 	const renderer = new Renderer({
 		Root,
 		fallback,
@@ -1123,13 +1126,22 @@ async function start({ paths, target, session, host, route, spa, trailing_slash,
 		host
 	});
 
+	const router = route
+		? new Router({
+				base: paths.base,
+				routes,
+				trailing_slash,
+				renderer
+		  })
+		: null;
+
 	init(router);
 	set_paths(paths);
 
 	if (hydrate) await renderer.start(hydrate);
 	if (router) {
-		router.init(renderer);
 		if (spa) router.goto(location.href, { replaceState: true }, []);
+		router.init_listeners();
 	}
 
 	dispatchEvent(new CustomEvent('sveltekit:start'));
