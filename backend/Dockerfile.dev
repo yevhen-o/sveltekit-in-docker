@@ -13,4 +13,10 @@ ENV APP_HOME /app
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
+RUN mkdir assets
+
+COPY src/assets/package.json assets
+COPY src/assets/package-lock.json assets
+RUN cd assets && npm install && cd ..
+
 CMD ["mix", "phx.server"]

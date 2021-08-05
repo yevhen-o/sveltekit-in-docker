@@ -26,7 +26,7 @@ services:
       context: ./backend
     command: mix do deps.get, ecto.create, ecto.migrate, phx.server
     volumes:
-      - /app/node_modules
+      - /app/assets/node_modules
       - ./backend/src:/app
     environment:
       - PGUSER=postgres
