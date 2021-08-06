@@ -1,6 +1,7 @@
 <script>
 import Buttons from "/src/components/CopyButton.svelte";
 import Code from "/src/components/Code.svelte";
+import Btn from '/src/components/Buttons.svelte'
 </script>
 
 <h1>Buttons comes here</h1>
@@ -69,14 +70,30 @@ import Code from "/src/components/Code.svelte";
 <Buttons textToCopy="<Buttons isExtraSmall isLarge isExtraLarge isSmall isSecondary isPrimary isSuccess isWarning isError isOutlined>With all props</Buttons>" isExtraSmall isSmall isExtraLarge isLarge isSecondary isPrimary isSuccess isWarning isError isOutlined>With all props</Buttons>
 <br>
 <br>
-<Buttons textToCopy={`
+<Buttons isWrapper textToCopy={`
 <Buttons isWrapper>
    <div style="padding: 20px; background: red">
     Button can be used as wrapper on some clickable content
   </div>
 </Buttons>
-`} isWrapper>
+`}>
   <div style="padding: 20px; background: red">
     Button can be used as wrapper on some clickable content
   </div>
 </Buttons>
+  <br>
+  <br>
+<Buttons isWrapper textToCopy={`<Btn icon="settings"></Btn>`}><Btn icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isPrimary icon="settings"></Btn>`}><Btn isPrimary icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isSecondary icon="settings"></Btn>`}><Btn isSecondary icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isOutlined icon="settings"></Btn>`}><Btn isOutlined icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isSuccess icon="settings"></Btn>`}><Btn isSuccess icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isWarning icon="settings"></Btn>`}><Btn isWarning icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isError icon="settings"></Btn>`}><Btn isError icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isPrimary isExtraSmall icon="settings"></Btn>`}><Btn isPrimary isExtraSmall icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isPrimary isSmall icon="settings"></Btn>`}><Btn isPrimary isSmall icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isPrimary isLarge icon="settings"></Btn>`}><Btn isPrimary isLarge icon="settings"></Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isPrimary isExtraLarge icon="settings"></Btn>`}><Btn isPrimary isExtraLarge icon="settings"></Btn></Buttons>
+
+<Buttons isWrapper textToCopy={`<Btn isPrimary iconBefore="settings">Settings</Btn>`}><Btn isPrimary iconBefore="settings">Settings</Btn></Buttons>
+<Buttons isWrapper textToCopy={`<Btn isPrimary iconAfter="settings">Settings</Btn>`}><Btn isPrimary iconAfter="settings">Settings</Btn></Buttons>

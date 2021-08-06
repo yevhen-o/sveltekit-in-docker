@@ -1,20 +1,26 @@
 <script>
   import CopyButton from "/src/components/CopyButton.svelte";
+  import Label from "/src/components/Label.svelte";
 
   export let code
+  export let isWithoutCopy = false
   export let label = undefined
 </script>
 
 <div class="code-wrapper">
   {#if label}
   <div class="code-label">
-    {label}
+    <Label>
+      {label}
+    </Label>
   </div>
   {/if}
   <pre>
     {code}
   </pre>
-  <CopyButton isPrimary textToCopy={code} title="Copy" ></CopyButton>
+  {#if !isWithoutCopy}
+    <CopyButton isPrimary textToCopy={code} title="Copy" ></CopyButton>
+  {/if}
 </div>
 
 <style>

@@ -1,6 +1,7 @@
 <script>
   import Button from '/src/components/html/Button.svelte'
   import Link from '/src/components/html/Link.svelte'
+  import Icons from '/src/components/Icons.svelte'
 
   export let title = 'Provide title property for Button component or slot default'
   export let href = undefined
@@ -16,6 +17,9 @@
   export let isLarge = false
   export let isSmall = false
   export let isWrapper = false
+  export let iconBefore = undefined
+  export let iconAfter = undefined
+  export let icon = undefined
 
   const CMP = href ? Link : Button
 </script>
@@ -36,14 +40,35 @@
     ...isSmall ? ['button-small'] : [], 
     ...isLarge ? ['button-large'] : [], 
     ...isExtraLarge ? ['button-xlarge'] : [], 
+    ...icon ? ['button-icon'] : [],
+    ...iconAfter || iconBefore ? ['button-with-icon'] : [],
     ].join(' ')}>
-    {#if $$slots && $$slots.default}
-      <slot />
+    {#if icon}
+      <Icons>{icon}</Icons>
     {:else}
-      {title}
+      <span class='button-content'>
+        {#if iconBefore}
+          <Icons>{iconBefore}</Icons>
+        {/if}
+        <span class="button-text">
+          {#if $$slots && $$slots.default}
+            <slot />
+          {:else}
+            {title}
+          {/if}
+        </span>
+        {#if iconAfter}
+          <Icons>{iconAfter}</Icons>
+        {/if}
+      </span>
     {/if}
   </CMP>
 {/if}
 
-
+<style>
+  .button-content {
+    display: flex;
+    align-items: center;
+  }
+</style>
 
