@@ -1,6 +1,6 @@
 <script>
   import Buttons from "./Buttons.svelte";
-import Card from "/src/components/Card.svelte";
+  import Card from "/src/components/Card.svelte";
   export let title
   export let onClose = () => { alert('Provide onClose function to Modal component for closing it') }
 </script>
@@ -8,7 +8,12 @@ import Card from "/src/components/Card.svelte";
 <div on:click={onClose} class="modal-backlight"></div>
 <div class='modal-wrapper'>
   <Card>
-    <div class="modal-title">{title}</div>
+    <div class="modal-title">
+      {title}
+      <div class="modal-close">
+        <Buttons on:click={onClose} icon="close"></Buttons>
+      </div>
+    </div>
     <div class="modal-content"><slot /></div>
     {#if $$slots && $$slots.actions}
     <div class="modal-actions">
@@ -36,7 +41,8 @@ import Card from "/src/components/Card.svelte";
   }
   .modal-title {
     padding-bottom: 8px;
-    border-bottom: 1px solid black
+    border-bottom: 1px solid #ccc;
+    padding-right: 50px;
   }
   .modal-content {
     padding: 20px 0;
@@ -47,5 +53,11 @@ import Card from "/src/components/Card.svelte";
     flex-direction: row;
     justify-content: flex-start;
     gap: 10px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
   }
 </style>

@@ -3,8 +3,10 @@
   import Buttons from "/src/components/Buttons.svelte";
   import Modal from "/src/components/Modal.svelte";
   import TextInput from "/src/components/TextInput.svelte";
+  import AuthorizationModal from '/src/lib/AuthorizationModal.svelte';
 
   let isModalShown = false
+  let isAuth = false
 </script>
 
 <h1>Form elements comes here</h1>
@@ -20,10 +22,12 @@
   <Icons>settings</Icons>
 </span>
 <br>
-<Buttons on:click={() => {
+<Buttons on:click={() => 
   isModalShown =  true
-  console.log('handle')
-}} isSecondary>Show modal</Buttons>
+} isSecondary>Show modal</Buttons>
+<Buttons on:click={() => 
+  isAuth =  true
+} isSecondary>Show Authorization</Buttons>
 {#if isModalShown}
 <Modal onClose={() => isModalShown = false} title="Modal title">
   <form class="pure-form pure-form-stacked">
@@ -34,4 +38,8 @@
     <Buttons on:click={() => isModalShown = false} isPrimary>Do some staf</Buttons>
   </div>
 </Modal>
+{/if}
+
+{#if isAuth}
+  <AuthorizationModal onClose={() => isAuth = false} />
 {/if}

@@ -9,6 +9,18 @@
 
 <div>
   <Label id={id}>{label}</Label>
-  <input id={id} />
+  <input id={id} {...$$restProps} />
+  {#if helpText}
   <HelpText>{helpText}</HelpText>
+  {/if}
 </div>
+
+<style>
+  div {
+    min-height: 80px
+  }
+
+  input {
+    width: 100%;
+  }
+</style>
